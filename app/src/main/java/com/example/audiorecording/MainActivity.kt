@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -28,8 +29,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var recorder: MediaRecorder? = null      // 🔹 MediaRecorder obyekti
+
+    private var player: MediaPlayer?= null
     private var fileName: String = ""                // 🔹 Audio saqlanadigan fayl nomi
     private var state: State = State.RELEASE         // 🔹 Dastlabki holat
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +57,75 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        binding.btnPlay.setOnClickListener {
+            when (state) {
+                State.RELEASE -> {  //
+                    onPlay(true)
+                }
+               else -> {
+                   // do nothing
+
+               }
+            }
+        }
+
+        binding.btnStop.setOnClickListener {
+            when (state) {
+
+                State.PLAYING -> {
+
+                    onPlay(false)
+                }
+                else -> {
+                    // do nothing
+
+                }
+            }
+        }
     }
+
+
+    private fun onPlay(start: Boolean){
+        if(start) startPlaying() else stopPlaying()
+    }
+
+    private fun startPlaying() {
+        state = State.PLAYING
+
+        player = MediaPlayer().apply {
+            setDataSource(fileName)
+
+            try{
+                prepare()
+            }catch (e : IOException){
+                Log.e("App", "Media player prepare fail $e")
+
+            }
+            start()
+        }
+
+
+        player?.setOnCompletionListener {
+            stopPlaying()
+        }
+        binding.btnRecord.isEnabled = false
+        binding.btnRecord.alpha = 0.3f
+
+
+
+
+    }
+
+    private fun stopPlaying() {
+        state =  State.PLAYING
+
+        player?.release()
+        player =null
+        binding.btnRecord.isEnabled = true
+        binding.btnRecord.alpha = 1.0f
+    }
+
 
     // 🔹 Bu funksiya permissionni tekshiradi va kerak bo‘lsa so‘raydi
     private fun record() {
