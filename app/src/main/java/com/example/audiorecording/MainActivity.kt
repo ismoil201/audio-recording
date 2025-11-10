@@ -17,7 +17,7 @@ import androidx.core.content.ContextCompat
 import com.example.audiorecording.databinding.ActivityMainBinding
 import java.io.IOException
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Timer.OnTickListener {
 
     // 🔹 Enum - ilovaning hozirgi holatini belgilaydi:
     // RELEASE = hech narsa qilinmayapti
@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private var fileName: String = ""                // 🔹 Audio saqlanadigan fayl nomi
     private var state: State = State.RELEASE         // 🔹 Dastlabki holat
 
+    private lateinit var  time: Timer
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         // 🔹 Yozuv saqlanadigan fayl manzili (3gp formatda)
         fileName = "${externalCacheDir?.absolutePath}/audiorecordtest.3gp"
 
+
+        time = Timer(this)
         // 🔹 "Record" tugmasi bosilganda bajariladigan ishlar
         binding.btnRecord.setOnClickListener {
             when (state) {
@@ -178,6 +182,9 @@ class MainActivity : AppCompatActivity() {
             start() // 🎙️ Yozishni boshlaydi
         }
 
+        recorder?.maxAmplitude?.toFloat()
+        time.start()
+
         // 🔹 UI yangilanishi
         binding.btnRecord.setImageDrawable(
             ContextCompat.getDrawable(this, R.drawable.baseline_stop_24)
@@ -187,6 +194,8 @@ class MainActivity : AppCompatActivity() {
         // Play tugmasini vaqtincha o‘chirib qo‘yamiz
         binding.btnPlay.isEnabled = false
         binding.btnPlay.alpha = 0.3f
+
+
     }
 
     // ⏹️ Yozishni to‘xtatadi va faylni saqlaydi
@@ -208,6 +217,9 @@ class MainActivity : AppCompatActivity() {
         // Play tugmasini qayta faollashtiramiz
         binding.btnPlay.isEnabled = true
         binding.btnPlay.alpha = 1.0f
+
+        time.stop()
+
     }
 
     // 🗣️ Agar foydalanuvchi ilgari ruxsat bermagan bo‘lsa — tushuntiruvchi dialog
@@ -271,6 +283,10 @@ class MainActivity : AppCompatActivity() {
             data = Uri.fromParts("package", packageName, null)
         }
         startActivity(intent)
+    }
+
+    override fun onTick(duration: Long) {
+        binding.view.addAmplitude(recorder?.maxAmplitude?.toFloat() ?: 0f)
     }
 
     companion object {
