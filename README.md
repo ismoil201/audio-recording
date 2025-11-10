@@ -10,11 +10,15 @@ A lightweight Android app built with **Kotlin** that lets users **record, play, 
   <tr>
     <td align="center">
       <img src="./screen.jpg" height="220" style="border-radius:10px;box-shadow:0 0 10px #ccc;"/>
-      <img src="./screen2.jpg" height="220" style="border-radius:10px;box-shadow:0 0 10px #ccc;"/>
       <br/><sub>📱 Recording Screen</sub>
+    </td>
+    <td align="center">
+      <img src="./screen2.jpg" height="220" style="border-radius:10px;box-shadow:0 0 10px #ccc;"/>
+      <br/><sub>📱 Playing Screen</sub>
     </td>
   </tr>
 </table>
+
 
 ---
 
