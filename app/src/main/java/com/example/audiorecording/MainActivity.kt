@@ -73,7 +73,8 @@ class MainActivity : AppCompatActivity(), Timer.OnTickListener {
                }
             }
         }
-
+        binding.btnPlay.isEnabled = false
+        binding.btnPlay.alpha = 0.3f
         binding.btnStop.setOnClickListener {
             when (state) {
 
@@ -117,7 +118,9 @@ class MainActivity : AppCompatActivity(), Timer.OnTickListener {
         binding.btnRecord.alpha = 0.3f
 
 
+        binding.view.clearWave()
 
+        time.start()
 
     }
 
@@ -128,6 +131,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTickListener {
         player =null
         binding.btnRecord.isEnabled = true
         binding.btnRecord.alpha = 1.0f
+        time.stop()
     }
 
 
@@ -182,7 +186,10 @@ class MainActivity : AppCompatActivity(), Timer.OnTickListener {
             start() // 🎙️ Yozishni boshlaydi
         }
 
-        recorder?.maxAmplitude?.toFloat()
+
+//        recorder?.maxAmplitude?.toFloat()
+
+        binding.view.clearData()
         time.start()
 
         // 🔹 UI yangilanishi
@@ -286,7 +293,19 @@ class MainActivity : AppCompatActivity(), Timer.OnTickListener {
     }
 
     override fun onTick(duration: Long) {
-        binding.view.addAmplitude(recorder?.maxAmplitude?.toFloat() ?: 0f)
+
+        val  millisecond = duration %1000
+        val second = (duration/1000) % 60
+
+        val minute = (duration/1000/60)
+
+        binding.tvTimer.text = String.format("%02d:%02d.%02d",minute, second, millisecond/10)
+
+        if (state == State.PLAYING){
+            binding.view.replyAmplitude(duration = duration.toInt())
+        }else {
+            binding.view.addAmplitude(recorder?.maxAmplitude?.toFloat() ?: 0f)
+        }
     }
 
     companion object {
